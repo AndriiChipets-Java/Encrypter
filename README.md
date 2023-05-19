@@ -13,4 +13,4 @@ My project has builded with implementation of SOLID principles.
 
 JUnit tests and Mockito have been implemented in this project.
 
-Oleksandr, could you pay attention especially on project structure and variables and method names, because it is my weakness, I think.It will be really helpful for me, if you give me some hint, how I can improve my skills.
+Oleksandr, could you pay attention especially on project structure and variables and method names, because it is my weakness, I think. It will be really helpful for me, if you give me some hint, how I can improve my skills.
