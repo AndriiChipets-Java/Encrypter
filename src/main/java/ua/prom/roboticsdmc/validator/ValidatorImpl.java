@@ -8,6 +8,13 @@ public class ValidatorImpl implements Validator {
     public void validate(String sourceFilePath, String command, int key) {
         validateCommand(command);
         validateFilePath(sourceFilePath);
+        validateKey(key);
+    }
+
+    private void validateKey(int key) {
+        if (key < 0) {
+            throw new IllegalArgumentException("Key can't be negative");
+        }
     }
 
     private static void validateFilePath(String sourceFilePath) {
@@ -24,7 +31,7 @@ public class ValidatorImpl implements Validator {
             throw new InvalidPathException("File is directory", "There is some problem ");
         } else if (!sourceFile.exists()) {
             throw new InvalidPathException("File doesn't exist", "There is some problem ");
-        }else if (sourceFile.length()<=0) {
+        } else if (sourceFile.length() <= 0) {
             throw new InvalidPathException("File is empty", "There is some problem ");
         }
     }

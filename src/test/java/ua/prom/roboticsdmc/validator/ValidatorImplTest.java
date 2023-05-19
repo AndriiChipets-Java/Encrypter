@@ -20,6 +20,22 @@ class ValidatorImplTest {
     Validator validator = new ValidatorImpl();
 
     @Test
+    void validate_shouldReturnIllegalArgumentException_whenKeyIsNegative() throws IOException {
+
+        Path sourceFilePath = tempDir.resolve("TempFile.txt");
+        String filePath = sourceFilePath.toString();
+        String command = "ENCRYPT";
+        int key = -11;
+        String fileText = "File exist";
+
+        Files.writeString(sourceFilePath, fileText);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+            () -> validator.validate(filePath, command, key));
+        assertEquals("Key can't be negative", exception.getMessage());
+    }
+
+    @Test
     void validate_shouldReturnIllegalArgumentException_whenFilePathIsNull() {
 
         String sourceFilePath = null;
