@@ -11,6 +11,7 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import ua.prom.roboticsdmc.domain.EncryptingData;
 
 class FileReaderImplTest {
     FileReader fileReader = new FileReaderImpl();
@@ -70,15 +71,18 @@ class FileReaderImplTest {
                 + "Java SE 17 (September 2021)\n"
                 + "Java SE 18 (to be released by March 2022)";
 
+        EncryptingData encryptingData = EncryptingData.builder().withSourceTextPath(tempFilePathString).build();
+
         assertAll(
             () -> assertTrue(Files.exists(tempFilePath), "File should exist"),
-            () -> assertEquals(expectedResult, fileReader.read(tempFilePathString)));
+            () -> assertEquals(expectedResult, fileReader.read(encryptingData)));
     }
 
     @Test
     void read_shouldReturnIllegalArgumentException_whenInputIsNotCorrectPathAndFileNotExist() {
 
         String notCorrectFilePathString = "notCorrectPath";
-        assertThrows(IllegalArgumentException.class, () -> fileReader.read(notCorrectFilePathString));
+        EncryptingData encryptingData = EncryptingData.builder().withSourceTextPath(notCorrectFilePathString).build();
+        assertThrows(IllegalArgumentException.class, () -> fileReader.read(encryptingData));
     }
 }

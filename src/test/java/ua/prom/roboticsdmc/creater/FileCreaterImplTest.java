@@ -68,8 +68,5 @@ class FileCreaterImplTest {
         Exception exception = assertThrows(IllegalArgumentException.class,
             () -> fileCreater.createFile(resultText, notCorrectFilePath));
         assertEquals("Can't create file", exception.getMessage());
-
-
-       // assertEquals(IllegalArgumentException.class, () -> fileCreater.createFile(resultText, notCorrectFilePath));
     }
 }

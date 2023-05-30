@@ -3,33 +3,43 @@ package ua.prom.roboticsdmc.encrypter;
 import org.apache.commons.lang3.StringUtils;
 import ua.prom.roboticsdmc.domain.AlphabetEn;
 import ua.prom.roboticsdmc.domain.Command;
+import ua.prom.roboticsdmc.domain.EncryptingData;
 
 import java.util.*;
 
 public class EncrypterImpl implements Encrypter {
     @Override
-    public String encryptText(String sourceText, String command, int key) {
+    public String encryptText(String sourceText, EncryptingData encryptingData) {
         String result = "";
         AlphabetEn alphabetEn = new AlphabetEn();
         List<Character> rotatedAlphabet = new ArrayList<>(alphabetEn.getEngAlphabet());
 
-        if (command.equals(String.valueOf(Command.ENCRYPT))) {
-            Collections.rotate(rotatedAlphabet, key % alphabetEn.getEngAlphabetSize() * -1);
-            result = processText(sourceText, alphabetEn.getEngAlphabet(), rotatedAlphabet, alphabetEn.getEngAlphabetSize());
-        } else if (command.equals(String.valueOf(Command.DECRYPT))) {
-            Collections.rotate(rotatedAlphabet, key % alphabetEn.getEngAlphabetSize());
-            result = processText(sourceText, alphabetEn.getEngAlphabet(), rotatedAlphabet, alphabetEn.getEngAlphabetSize());
-        } else if (command.equals(String.valueOf(Command.BRUTE_FORCE))) {
-            result = executeBruteForce(sourceText, alphabetEn.getEngAlphabet(), alphabetEn.getEngAlphabetSize(), alphabetEn.getEngLanguageIdentifiers());
+        if (Command.ENCRYPT.equals(encryptingData.getCommand())) {
+            Collections.rotate(rotatedAlphabet, encryptingData.getKey() % alphabetEn.getEngAlphabetSize() * -1);
+            result = processText(sourceText,
+                alphabetEn.getEngAlphabet(),
+                rotatedAlphabet,
+                alphabetEn.getEngAlphabetSize());
+        } else if (Command.DECRYPT.equals(encryptingData.getCommand())) {
+            Collections.rotate(rotatedAlphabet, encryptingData.getKey() % alphabetEn.getEngAlphabetSize());
+            result = processText(sourceText,
+                alphabetEn.getEngAlphabet(),
+                rotatedAlphabet,
+                alphabetEn.getEngAlphabetSize());
+        } else if (Command.BRUTE_FORCE.equals(encryptingData.getCommand())) {
+            result = executeBruteForce(sourceText,
+                alphabetEn.getEngAlphabet(),
+                alphabetEn.getEngAlphabetSize(),
+                alphabetEn.getEngLanguageIdentifiers());
         }
         return result;
     }
 
-    private String executeBruteForce(String sourceText, List<Character> alphabet, int alphabetSize, List<String> languageIdentifiers) {
-        StringBuilder resultStrBdr = new StringBuilder();
-        String message = "This is expected key number -> %d < - if you find it weird you can choose some more suitable variant from provided below\n\n";
-        String keyNumber = "\n\n======================== The Brute force key is:-> %d <- ========================\n\n";
-        ArrayList<Integer> identifireMatches = new ArrayList<>();
+    private String executeBruteForce(String sourceText,
+                                     List<Character> alphabet,
+                                     int alphabetSize,
+                                     List<String> languageIdentifiers) {
+        ArrayList<Integer> matchIdentifiers = new ArrayList<>();
         ArrayList<String> textVariants = new ArrayList<>();
 
         for (int i = 0; i < alphabetSize; i++) {
@@ -40,20 +50,17 @@ public class EncrypterImpl implements Encrypter {
             for (String identifier : languageIdentifiers) {
                 matchesNum += StringUtils.countMatches(currentVariant, identifier);
             }
-            identifireMatches.add(i, matchesNum);
+            matchIdentifiers.add(i, matchesNum);
             textVariants.add(i, currentVariant);
         }
-        int max = Collections.max(identifireMatches);
-        resultStrBdr.append(String.format(message, identifireMatches.indexOf(max)));
-        resultStrBdr.append(textVariants.get(identifireMatches.indexOf(max)));
-        for (int i = 0; i < textVariants.size(); i++) {
-            resultStrBdr.append(String.format(keyNumber, i));
-            resultStrBdr.append(textVariants.get(i));
-        }
-        return resultStrBdr.toString();
+        int max = Collections.max(matchIdentifiers);
+        return new StringBuilder().append(textVariants.get(matchIdentifiers.indexOf(max))).toString();
     }
 
-    private String processText(String sourceText, List<Character> alphabet, List<Character> rotatedChars, int alphabetSize) {
+    private String processText(String sourceText,
+                               List<Character> alphabet,
+                               List<Character> rotatedChars,
+                               int alphabetSize) {
         StringBuilder currentStrBdr = new StringBuilder();
         boolean isSymbolExist = false;
         String encryptedSymbol = "";
@@ -80,7 +87,10 @@ public class EncrypterImpl implements Encrypter {
         return String.valueOf(rotatedChars.get(letterPosition)).toLowerCase();
     }
 
-    private void buildText(StringBuilder currentStrBdr, boolean isSymbolExist, String encryptedSymbol, char currTextChar) {
+    private void buildText(StringBuilder currentStrBdr,
+                           boolean isSymbolExist,
+                           String encryptedSymbol,
+                           char currTextChar) {
         if (isSymbolExist) {
             currentStrBdr.append(encryptedSymbol);
         } else {

@@ -11,7 +11,7 @@ public class FileCreateImpl implements FileCreater {
         try {
             Files.writeString(Paths.get(resultFilePath), resultText);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Can't create file");
+            throw new IllegalArgumentException("Can't create file", e);
         }
     }
 }

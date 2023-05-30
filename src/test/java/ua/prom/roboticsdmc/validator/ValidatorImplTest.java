@@ -11,6 +11,8 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import ua.prom.roboticsdmc.domain.Command;
+import ua.prom.roboticsdmc.domain.EncryptingData;
 
 class ValidatorImplTest {
 
@@ -24,66 +26,82 @@ class ValidatorImplTest {
 
         Path sourceFilePath = tempDir.resolve("TempFile.txt");
         String filePath = sourceFilePath.toString();
-        String command = "ENCRYPT";
+        String command = Command.ENCRYPT.toString();
         int key = -11;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(filePath)
+            .withCommand(command)
+            .withKey(key).build();
         String fileText = "File exist";
 
         Files.writeString(sourceFilePath, fileText);
 
         Exception exception = assertThrows(IllegalArgumentException.class,
-            () -> validator.validate(filePath, command, key));
+            () -> validator.validate(encryptingData));
         assertEquals("Key can't be negative", exception.getMessage());
     }
 
     @Test
     void validate_shouldReturnIllegalArgumentException_whenFilePathIsNull() {
 
-        String sourceFilePath = null;
-        String command = "ENCRYPT";
+        String filePath = null;
+        String command = Command.ENCRYPT.toString();
         int key = 1;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(filePath)
+            .withCommand(command)
+            .withKey(key).build();
 
         Exception exception = assertThrows(IllegalArgumentException.class,
-            () -> validator.validate(sourceFilePath, command, key));
+            () -> validator.validate(encryptingData));
         assertEquals("File path is null", exception.getMessage());
     }
 
     @Test
     void validate_shouldReturnIllegalArgumentException_whenFilePathIsEmpty() {
 
-        String sourceFilePath = "";
-        String command = "ENCRYPT";
+        String filePath = "";
+        String command = Command.ENCRYPT.toString();
         int key = 1;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(filePath)
+            .withCommand(command)
+            .withKey(key).build();
 
         Exception exception = assertThrows(IllegalArgumentException.class,
-            () -> validator.validate(sourceFilePath, command, key));
+            () -> validator.validate(encryptingData));
         assertEquals("File path is empty", exception.getMessage());
     }
 
     @Test
     void validate_shouldReturnIllegalArgumentException_whenFilePathContainsOnlySpacesOrTabs() {
 
-        String sourceFilePath = "   ";
-        String command = "ENCRYPT";
+        String filePath = "   ";
+        String command = Command.ENCRYPT.toString();
         int key = 1;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(filePath)
+            .withCommand(command)
+            .withKey(key).build();
 
         Exception exception = assertThrows(IllegalArgumentException.class,
-            () -> validator.validate(sourceFilePath, command, key));
+            () -> validator.validate(encryptingData));
         assertEquals("File path contains only spaces or (and) tabs", exception.getMessage());
     }
 
     @Test
     void validate_shouldReturnInvalidPathException_whenFilePathIsDirectory() throws IOException {
 
-        Path sourceFilePath = tempDir.resolve("TempFile.txt");
         String directoryPath = tempDir.toString();
-        String command = "ENCRYPT";
+        String command = Command.ENCRYPT.toString();
         int key = 1;
-        String fileText = "File exist";
-
-        Files.writeString(sourceFilePath, fileText);
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(directoryPath)
+            .withCommand(command)
+            .withKey(key).build();
 
         Exception exception = assertThrows(InvalidPathException.class,
-            () -> validator.validate(directoryPath, command, key));
+            () -> validator.validate(encryptingData));
         assertEquals("There is some problem : File is directory", exception.getMessage());
     }
 
@@ -92,16 +110,20 @@ class ValidatorImplTest {
 
         Path sourceFilePath = tempDir.resolve("TempFile.txt");
         String filePath = sourceFilePath.toString();
-        String command = "ENCRYPT";
+        String wrongFilePath = "wrong" + filePath;
+        String command = Command.ENCRYPT.toString();
         int key = 1;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(wrongFilePath)
+            .withCommand(command)
+            .withKey(key).build();
         String fileText = "File exist";
 
         Files.writeString(sourceFilePath, fileText);
 
-        String wrongFilePath = "wrong" + filePath;
 
         Exception exception = assertThrows(InvalidPathException.class,
-            () -> validator.validate(wrongFilePath, command, key));
+            () -> validator.validate(encryptingData));
         assertEquals("There is some problem : File doesn't exist", exception.getMessage());
     }
 
@@ -110,14 +132,18 @@ class ValidatorImplTest {
 
         Path sourceFilePath = tempDir.resolve("TempFile.txt");
         String filePath = sourceFilePath.toString();
-        String command = "ENCRYPT";
+        String command = Command.ENCRYPT.toString();
         int key = 1;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(filePath)
+            .withCommand(command)
+            .withKey(key).build();
         String fileText = "";
 
         Files.writeString(sourceFilePath, fileText);
 
         Exception exception = assertThrows(InvalidPathException.class,
-            () -> validator.validate(filePath, command, key));
+            () -> validator.validate(encryptingData));
         assertEquals("There is some problem : File is empty", exception.getMessage());
     }
 
@@ -126,13 +152,17 @@ class ValidatorImplTest {
 
         Path sourceFilePath = tempDir.resolve("TempFile.txt");
         String filePath = sourceFilePath.toString();
-        String command = "ENCRYPT";
+        String command = Command.ENCRYPT.toString();
         int key = 1;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(filePath)
+            .withCommand(command)
+            .withKey(key).build();
         String fileText = "Path and file are correct";
 
         Files.writeString(sourceFilePath, fileText);
 
-        assertDoesNotThrow(() -> validator.validate(filePath, command, key));
+        assertDoesNotThrow(() -> validator.validate(encryptingData));
     }
 
     @Test
@@ -141,11 +171,15 @@ class ValidatorImplTest {
         Path sourceFilePath = tempDir.resolve("TempFile.txt");
         String filePath = sourceFilePath.toString();
         int key = 1;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(filePath)
+            .withCommand(command)
+            .withKey(key).build();
         String fileText = "JavaRush";
         Files.writeString(sourceFilePath, fileText);
 
         Exception exception = assertThrows(IllegalArgumentException.class,
-            () -> validator.validate(filePath, command, key));
+            () -> validator.validate(encryptingData));
         assertEquals("Command is null", exception.getMessage());
     }
 
@@ -155,11 +189,15 @@ class ValidatorImplTest {
         Path sourceFilePath = tempDir.resolve("TempFile.txt");
         String filePath = sourceFilePath.toString();
         int key = 1;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(filePath)
+            .withCommand(command)
+            .withKey(key).build();
         String fileText = "JavaRush";
         Files.writeString(sourceFilePath, fileText);
 
         Exception exception = assertThrows(IllegalArgumentException.class,
-            () -> validator.validate(filePath, command, key));
+            () -> validator.validate(encryptingData));
         assertEquals("Command is empty", exception.getMessage());
     }
 
@@ -169,11 +207,15 @@ class ValidatorImplTest {
         Path sourceFilePath = tempDir.resolve("TempFile.txt");
         String filePath = sourceFilePath.toString();
         int key = 1;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(filePath)
+            .withCommand(command)
+            .withKey(key).build();
         String fileText = "JavaRush";
         Files.writeString(sourceFilePath, fileText);
 
         Exception exception = assertThrows(IllegalArgumentException.class,
-            () -> validator.validate(filePath, command, key));
+            () -> validator.validate(encryptingData));
         assertEquals("Command contains only spaces or tabs", exception.getMessage());
     }
 
@@ -183,11 +225,18 @@ class ValidatorImplTest {
         Path sourceFilePath = tempDir.resolve("TempFile.txt");
         String filePath = sourceFilePath.toString();
         int key = 1;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(filePath)
+            .withCommand(command)
+            .withKey(key).build();
         String fileText = "JavaRush";
         Files.writeString(sourceFilePath, fileText);
 
         Exception exception = assertThrows(IllegalArgumentException.class,
-            () -> validator.validate(filePath, command, key));
-        assertEquals("You enter wrong command, please chose between: ENCRYPT, DECRYPT or BRUTE_FORCE", exception.getMessage());
+            () -> validator.validate(encryptingData));
+        assertEquals("You enter wrong command, please chose between: "
+            + Command.ENCRYPT +", "
+            + Command.DECRYPT + ", "
+            + Command.BRUTE_FORCE, exception.getMessage());
     }
 }

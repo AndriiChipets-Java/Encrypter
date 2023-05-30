@@ -1,14 +1,19 @@
 package ua.prom.roboticsdmc.validator;
 
+import ua.prom.roboticsdmc.domain.Command;
+import ua.prom.roboticsdmc.domain.EncryptingData;
+
 import java.io.File;
 import java.nio.file.InvalidPathException;
 
 public class ValidatorImpl implements Validator {
     @Override
-    public void validate(String sourceFilePath, String command, int key) {
-        validateCommand(command);
-        validateFilePath(sourceFilePath);
-        validateKey(key);
+    public void validate(EncryptingData encryptingData) {
+        validateCommand(encryptingData.getCommand());
+        validateFilePath(encryptingData.getSourceTextPath());
+        if (encryptingData.getKey() != 0) {
+            validateKey(encryptingData.getKey());
+        }
     }
 
     private void validateKey(int key) {
@@ -43,8 +48,13 @@ public class ValidatorImpl implements Validator {
             throw new IllegalArgumentException("Command is empty");
         } else if (command.trim().isEmpty()) {
             throw new IllegalArgumentException("Command contains only spaces or tabs");
-        } else if (!command.equals("ENCRYPT") && !command.equals("DECRYPT") && !command.equals("BRUTE_FORCE")) {
-            throw new IllegalArgumentException("You enter wrong command, please chose between: ENCRYPT, DECRYPT or BRUTE_FORCE");
+        } else if (!Command.ENCRYPT.equals(command)
+            && !Command.DECRYPT.equals(command)
+            && !Command.BRUTE_FORCE.equals(command)) {
+            throw new IllegalArgumentException("You enter wrong command, please chose between: "
+                + Command.ENCRYPT +", "
+                + Command.DECRYPT + ", "
+                + Command.BRUTE_FORCE);
         }
     }
 }

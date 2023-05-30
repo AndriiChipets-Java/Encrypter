@@ -1,5 +1,6 @@
 package ua.prom.roboticsdmc.provider;
 
+import ua.prom.roboticsdmc.domain.EncryptingData;
 import ua.prom.roboticsdmc.encrypter.Encrypter;
 import ua.prom.roboticsdmc.encrypter.PathCreater;
 import ua.prom.roboticsdmc.reader.FileReader;
@@ -13,7 +14,11 @@ public class EncryptingProvider {
     private final PathCreater pathCreater;
     private final FileCreater fileCreater;
 
-    public EncryptingProvider(Validator fileValidator, FileReader fileReader, Encrypter encrypter, PathCreater pathCreater, FileCreater fileCreater) {
+    public EncryptingProvider(Validator fileValidator,
+                              FileReader fileReader,
+                              Encrypter encrypter,
+                              PathCreater pathCreater,
+                              FileCreater fileCreater) {
         this.fileValidator = fileValidator;
         this.fileReader = fileReader;
         this.encrypter = encrypter;
@@ -21,11 +26,11 @@ public class EncryptingProvider {
         this.fileCreater = fileCreater;
     }
 
-    public void provideEncrypting(String sourceFilePath, String command, int key) {
-        fileValidator.validate(sourceFilePath, command, key);
-        String sourceText = fileReader.read(sourceFilePath);
-        String resultText = encrypter.encryptText(sourceText, command, key);
-        String resultFilePath = pathCreater.createPath(sourceFilePath, command);
+    public void provideEncrypting(EncryptingData encryptingData) {
+        fileValidator.validate(encryptingData);
+        String sourceText = fileReader.read(encryptingData);
+        String resultText = encrypter.encryptText(sourceText, encryptingData);
+        String resultFilePath = pathCreater.createPath(encryptingData);
         fileCreater.createFile(resultText, resultFilePath);
     }
 }

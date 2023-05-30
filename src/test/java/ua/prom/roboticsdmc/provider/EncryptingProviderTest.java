@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.prom.roboticsdmc.creater.FileCreater;
+import ua.prom.roboticsdmc.domain.EncryptingData;
 import ua.prom.roboticsdmc.encrypter.Encrypter;
 import ua.prom.roboticsdmc.encrypter.PathCreater;
 import ua.prom.roboticsdmc.reader.FileReader;
@@ -112,23 +113,28 @@ class EncryptingProviderTest {
             throw new IllegalArgumentException(e);
         }
 
-        doNothing().when(validator).validate(tmpSrcFilePathStr, command, key);
-        when(fileReader.read(tmpSrcFilePathStr)).thenReturn(sourceFileText);
-        when(encrypter.encryptText(sourceFileText, command, key)).thenReturn(resultText);
-        when(pathCreater.createPath(tmpSrcFilePathStr, command)).thenReturn(tmpResFilePathStr);
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withSourceTextPath(tmpSrcFilePathStr)
+            .withCommand(command)
+            .withKey(key).build();
+
+        doNothing().when(validator).validate(encryptingData);
+        when(fileReader.read(encryptingData)).thenReturn(sourceFileText);
+        when(encrypter.encryptText(sourceFileText, encryptingData)).thenReturn(resultText);
+        when(pathCreater.createPath(encryptingData)).thenReturn(tmpResFilePathStr);
         doNothing().when(fileCreater).createFile(resultText, tmpResFilePathStr);
 
         assertAll(
-            () -> encryptingProvider.provideEncrypting(tmpSrcFilePathStr, command, key),
+            () -> encryptingProvider.provideEncrypting(encryptingData),
             () -> assertTrue(resultFile.exists()),
             () -> assertTrue(resultFile.length() > 0)
         );
 
         InOrder inOrder = inOrder(validator, fileReader, encrypter, pathCreater, fileCreater);
-        inOrder.verify(validator).validate(tmpSrcFilePathStr, command, key);
-        inOrder.verify(fileReader).read(tmpSrcFilePathStr);
-        inOrder.verify(encrypter).encryptText(sourceFileText, command, key);
-        inOrder.verify(pathCreater).createPath(tmpSrcFilePathStr, command);
+        inOrder.verify(validator).validate(encryptingData);
+        inOrder.verify(fileReader).read(encryptingData);
+        inOrder.verify(encrypter).encryptText(sourceFileText, encryptingData);
+        inOrder.verify(pathCreater).createPath(encryptingData);
         inOrder.verify(fileCreater).createFile(resultText, tmpResFilePathStr);
     }
 }

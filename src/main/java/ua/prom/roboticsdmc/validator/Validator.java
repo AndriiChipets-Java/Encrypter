@@ -1,5 +1,7 @@
 package ua.prom.roboticsdmc.validator;
 
+import ua.prom.roboticsdmc.domain.EncryptingData;
+
 public interface Validator {
-    void validate(String sourceFilePath, String command, int key);
+    void validate(EncryptingData encryptingData);
 }

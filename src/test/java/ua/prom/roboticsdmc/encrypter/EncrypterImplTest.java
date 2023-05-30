@@ -1,6 +1,8 @@
 package ua.prom.roboticsdmc.encrypter;
 
 import org.junit.jupiter.api.Test;
+import ua.prom.roboticsdmc.domain.Command;
+import ua.prom.roboticsdmc.domain.EncryptingData;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -10,8 +12,11 @@ class EncrypterImplTest {
     @Test
     void encryptText_shouldReturnStringWithEncryptedText_whenCommandIsEncrypt() {
 
-        String command = "ENCRYPT";
+        String command = Command.ENCRYPT.toString();
         int key = 10;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withCommand(command)
+            .withKey(key).build();
         String sourceText =
             "JDK Alpha and Beta (1995)\n"
                 + "JDK 1.0 (23rd Jan 1996)\n"
@@ -55,14 +60,17 @@ class EncrypterImplTest {
                 + "Tkfk CO 17 (Cozdowlob 2021)\n"
                 + "Tkfk CO 18 (dy lo bovokcon li Wkbmr 2022)";
 
-        assertEquals(expectedText, encrypter.encryptText(sourceText, command, key));
+        assertEquals(expectedText, encrypter.encryptText(sourceText, encryptingData));
     }
 
     @Test
     void encryptText_shouldReturnStringWithDecryptedText_whenCommandIsDecryptAndKeyWhichWasUsedForEncryption() {
 
-        String command = "DECRYPT";
+        String command = Command.DECRYPT.toString();
         int key = 10;
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withCommand(command)
+            .withKey(key).build();
         String sourceText =
             "TNU Kvzrk kxn Lodk (1995)\n"
                 + "TNU 1.0 (23bn Tkx 1996)\n"
@@ -106,210 +114,26 @@ class EncrypterImplTest {
                 + "Java SE 17 (September 2021)\n"
                 + "Java SE 18 (to be released by March 2022)";
 
-        assertEquals(expectedText, encrypter.encryptText(sourceText, command, key));
+        assertEquals(expectedText, encrypter.encryptText(sourceText, encryptingData));
     }
 
     @Test
     void encryptText_shouldReturnStringWithBruteForcedText_whenCommandIsBruteForce() {
 
-        String command = "BRUTE_FORCE";
-        int key = 1;
+        String command = Command.BRUTE_FORCE.toString();
+        EncryptingData encryptingData = EncryptingData.builder()
+            .withCommand(command).build();
         String sourceText =
             "TNU Kvzrk kxn Lodk (1995)\n"
                 + "TNU 1.0 (23bn Tkx 1996)\n"
                 + "TNU 1.1 (19dr Pol 1997)\n"
                 + "T2CO 1.2 (8dr Nom 1998)";
         String expectedText =
-
-            "This is expected key number -> 10 < - if you find it weird you can choose some more suitable variant from provided below\n"
-                + "\n"
-                + "JDK Alpha and Beta (1995)\n"
+            "JDK Alpha and Beta (1995)\n"
                 + "JDK 1.0 (23rd Jan 1996)\n"
                 + "JDK 1.1 (19th Feb 1997)\n"
-                + "J2SE 1.2 (8th Dec 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 0 <- ========================\n"
-                + "\n"
-                + "TNU Kvzrk kxn Lodk (1995)\n"
-                + "TNU 1.0 (23bn Tkx 1996)\n"
-                + "TNU 1.1 (19dr Pol 1997)\n"
-                + "T2CO 1.2 (8dr Nom 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 1 <- ========================\n"
-                + "\n"
-                + "SMT Juyqj jwm Kncj (1995)\n"
-                + "SMT 1.0 (23am Sjw 1996)\n"
-                + "SMT 1.1 (19cq Onk 1997)\n"
-                + "S2BN 1.2 (8cq Mnl 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 2 <- ========================\n"
-                + "\n"
-                + "RLS Itxpi ivl Jmbi (1995)\n"
-                + "RLS 1.0 (23zl Riv 1996)\n"
-                + "RLS 1.1 (19bp Nmj 1997)\n"
-                + "R2AM 1.2 (8bp Lmk 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 3 <- ========================\n"
-                + "\n"
-                + "QKR Hswoh huk Ilah (1995)\n"
-                + "QKR 1.0 (23yk Qhu 1996)\n"
-                + "QKR 1.1 (19ao Mli 1997)\n"
-                + "Q2ZL 1.2 (8ao Klj 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 4 <- ========================\n"
-                + "\n"
-                + "PJQ Grvng gtj Hkzg (1995)\n"
-                + "PJQ 1.0 (23xj Pgt 1996)\n"
-                + "PJQ 1.1 (19zn Lkh 1997)\n"
-                + "P2YK 1.2 (8zn Jki 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 5 <- ========================\n"
-                + "\n"
-                + "OIP Fqumf fsi Gjyf (1995)\n"
-                + "OIP 1.0 (23wi Ofs 1996)\n"
-                + "OIP 1.1 (19ym Kjg 1997)\n"
-                + "O2XJ 1.2 (8ym Ijh 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 6 <- ========================\n"
-                + "\n"
-                + "NHO Eptle erh Fixe (1995)\n"
-                + "NHO 1.0 (23vh Ner 1996)\n"
-                + "NHO 1.1 (19xl Jif 1997)\n"
-                + "N2WI 1.2 (8xl Hig 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 7 <- ========================\n"
-                + "\n"
-                + "MGN Doskd dqg Ehwd (1995)\n"
-                + "MGN 1.0 (23ug Mdq 1996)\n"
-                + "MGN 1.1 (19wk Ihe 1997)\n"
-                + "M2VH 1.2 (8wk Ghf 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 8 <- ========================\n"
-                + "\n"
-                + "LFM Cnrjc cpf Dgvc (1995)\n"
-                + "LFM 1.0 (23tf Lcp 1996)\n"
-                + "LFM 1.1 (19vj Hgd 1997)\n"
-                + "L2UG 1.2 (8vj Fge 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 9 <- ========================\n"
-                + "\n"
-                + "KEL Bmqib boe Cfub (1995)\n"
-                + "KEL 1.0 (23se Kbo 1996)\n"
-                + "KEL 1.1 (19ui Gfc 1997)\n"
-                + "K2TF 1.2 (8ui Efd 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 10 <- ========================\n"
-                + "\n"
-                + "JDK Alpha and Beta (1995)\n"
-                + "JDK 1.0 (23rd Jan 1996)\n"
-                + "JDK 1.1 (19th Feb 1997)\n"
-                + "J2SE 1.2 (8th Dec 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 11 <- ========================\n"
-                + "\n"
-                + "ICJ Zkogz zmc Adsz (1995)\n"
-                + "ICJ 1.0 (23qc Izm 1996)\n"
-                + "ICJ 1.1 (19sg Eda 1997)\n"
-                + "I2RD 1.2 (8sg Cdb 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 12 <- ========================\n"
-                + "\n"
-                + "HBI Yjnfy ylb Zcry (1995)\n"
-                + "HBI 1.0 (23pb Hyl 1996)\n"
-                + "HBI 1.1 (19rf Dcz 1997)\n"
-                + "H2QC 1.2 (8rf Bca 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 13 <- ========================\n"
-                + "\n"
-                + "GAH Ximex xka Ybqx (1995)\n"
-                + "GAH 1.0 (23oa Gxk 1996)\n"
-                + "GAH 1.1 (19qe Cby 1997)\n"
-                + "G2PB 1.2 (8qe Abz 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 14 <- ========================\n"
-                + "\n"
-                + "FZG Whldw wjz Xapw (1995)\n"
-                + "FZG 1.0 (23nz Fwj 1996)\n"
-                + "FZG 1.1 (19pd Bax 1997)\n"
-                + "F2OA 1.2 (8pd Zay 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 15 <- ========================\n"
-                + "\n"
-                + "EYF Vgkcv viy Wzov (1995)\n"
-                + "EYF 1.0 (23my Evi 1996)\n"
-                + "EYF 1.1 (19oc Azw 1997)\n"
-                + "E2NZ 1.2 (8oc Yzx 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 16 <- ========================\n"
-                + "\n"
-                + "DXE Ufjbu uhx Vynu (1995)\n"
-                + "DXE 1.0 (23lx Duh 1996)\n"
-                + "DXE 1.1 (19nb Zyv 1997)\n"
-                + "D2MY 1.2 (8nb Xyw 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 17 <- ========================\n"
-                + "\n"
-                + "CWD Teiat tgw Uxmt (1995)\n"
-                + "CWD 1.0 (23kw Ctg 1996)\n"
-                + "CWD 1.1 (19ma Yxu 1997)\n"
-                + "C2LX 1.2 (8ma Wxv 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 18 <- ========================\n"
-                + "\n"
-                + "BVC Sdhzs sfv Twls (1995)\n"
-                + "BVC 1.0 (23jv Bsf 1996)\n"
-                + "BVC 1.1 (19lz Xwt 1997)\n"
-                + "B2KW 1.2 (8lz Vwu 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 19 <- ========================\n"
-                + "\n"
-                + "AUB Rcgyr reu Svkr (1995)\n"
-                + "AUB 1.0 (23iu Are 1996)\n"
-                + "AUB 1.1 (19ky Wvs 1997)\n"
-                + "A2JV 1.2 (8ky Uvt 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 20 <- ========================\n"
-                + "\n"
-                + "ZTA Qbfxq qdt Rujq (1995)\n"
-                + "ZTA 1.0 (23ht Zqd 1996)\n"
-                + "ZTA 1.1 (19jx Vur 1997)\n"
-                + "Z2IU 1.2 (8jx Tus 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 21 <- ========================\n"
-                + "\n"
-                + "YSZ Paewp pcs Qtip (1995)\n"
-                + "YSZ 1.0 (23gs Ypc 1996)\n"
-                + "YSZ 1.1 (19iw Utq 1997)\n"
-                + "Y2HT 1.2 (8iw Str 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 22 <- ========================\n"
-                + "\n"
-                + "XRY Ozdvo obr Psho (1995)\n"
-                + "XRY 1.0 (23fr Xob 1996)\n"
-                + "XRY 1.1 (19hv Tsp 1997)\n"
-                + "X2GS 1.2 (8hv Rsq 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 23 <- ========================\n"
-                + "\n"
-                + "WQX Nycun naq Orgn (1995)\n"
-                + "WQX 1.0 (23eq Wna 1996)\n"
-                + "WQX 1.1 (19gu Sro 1997)\n"
-                + "W2FR 1.2 (8gu Qrp 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 24 <- ========================\n"
-                + "\n"
-                + "VPW Mxbtm mzp Nqfm (1995)\n"
-                + "VPW 1.0 (23dp Vmz 1996)\n"
-                + "VPW 1.1 (19ft Rqn 1997)\n"
-                + "V2EQ 1.2 (8ft Pqo 1998)\n"
-                + "\n"
-                + "======================== The Brute force key is:-> 25 <- ========================\n"
-                + "\n"
-                + "UOV Lwasl lyo Mpel (1995)\n"
-                + "UOV 1.0 (23co Uly 1996)\n"
-                + "UOV 1.1 (19es Qpm 1997)\n"
-                + "U2DP 1.2 (8es Opn 1998)";
+                + "J2SE 1.2 (8th Dec 1998)";
 
-        assertEquals(expectedText, encrypter.encryptText(sourceText, command, key));
+        assertEquals(expectedText, encrypter.encryptText(sourceText, encryptingData));
     }
 }
